@@ -27,7 +27,7 @@ scaled_target = target_scaler.fit_transform(target)
 
 X = np.array(scaled_features)
 y = np.array(scaled_target).flatten()
-
+ 
 # Initialize weights
 w1 = np.random.rand()
 w2 = np.random.rand()
