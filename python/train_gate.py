@@ -50,7 +50,7 @@ for epoch in range(10):
     for x1 in [0, 1]:
         for x2 in [0, 1]:
             result = predict(x1, x2)
-            print(f"{x1} AND {x2} = {result}")
+            print(f"{x1} {gate} {x2} = {result}")
 
     if error_count == 0:
         print("Training complete — all outputs correct.")
