@@ -14,7 +14,7 @@ exports.runTraining = (modelType) => {
         scriptPath = "../python/train_or.py";
         break;
       case "bmi":
-        scriptPath = "../python/train_model.py";
+        scriptPath = "../python/train_bmi_model.py";
         break;
       default:
         return reject(new Error("Unknown model type"));

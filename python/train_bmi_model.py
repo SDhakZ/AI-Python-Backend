@@ -1,4 +1,4 @@
-# train_model.py
+# train_bmi_model.py
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
