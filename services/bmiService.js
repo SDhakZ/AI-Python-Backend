@@ -3,7 +3,7 @@ const path = require("path");
 
 exports.getBMIFromPython = (height, weight) => {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, "../python/bmi_predictor.py");
+    const scriptPath = path.join(__dirname, "../python/predict_bmi.py");
     const process = spawn("python3", [scriptPath, height, weight]);
 
     let result = "";

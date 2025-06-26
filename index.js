@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const bmiRoutes = require("./routes/bmiRoutes");
+const predictRoutes = require("./routes/predictRoutes");
 const trainRoutes = require("./routes/trainRoutes");
 
 const app = express();
@@ -14,8 +14,8 @@ app.use(
 );
 app.use(express.json());
 
-app.use("/api", bmiRoutes);
-app.use("/api", trainRoutes);
+app.use("/api/predict", predictRoutes);
+app.use("/api/train", trainRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ API running at http://localhost:${PORT}/api/bmi`);

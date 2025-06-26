@@ -1,4 +1,4 @@
-# bmi_predictor.py
+# predict_bmi.py
 import pickle
 import sys
 import numpy as np
@@ -18,7 +18,7 @@ target_scaler = model["target_scaler"]
 
 # Get CLI input
 if len(sys.argv) != 3:
-    print("Usage: python bmi_predictor.py <height_m> <weight_kg>")
+    print("Usage: python predict_bmi.py <height_m> <weight_kg>")
     sys.exit(1)
 
 height = float(sys.argv[1])

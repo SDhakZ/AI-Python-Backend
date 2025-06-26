@@ -1,11 +1,26 @@
+// services/trainService.js
 const { spawn } = require("child_process");
 const path = require("path");
 
-exports.runTraining = () => {
+exports.runTraining = (modelType) => {
   return new Promise((resolve, reject) => {
-    const trainScript = spawn("python", [
-      path.join(__dirname, "../python/train_model.py"),
-    ]);
+    let scriptPath;
+
+    switch (modelType) {
+      case "and":
+        scriptPath = "../python/train_and.py";
+        break;
+      case "or":
+        scriptPath = "../python/train_or.py";
+        break;
+      case "bmi":
+        scriptPath = "../python/train_model.py";
+        break;
+      default:
+        return reject(new Error("Unknown model type"));
+    }
+
+    const trainScript = spawn("python", [path.join(__dirname, scriptPath)]);
 
     trainScript.stdout.on("data", (data) => {
       console.log(`Training output: ${data}`);
