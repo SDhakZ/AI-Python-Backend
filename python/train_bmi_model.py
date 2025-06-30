@@ -38,8 +38,8 @@ epochs = 1000
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-def sigmoid_derivative(output):
-    return output * (1 - output)
+def sigmoid_derivative(prediction):
+    return prediction * (1 - prediction)
 
 # Train perceptron
 for epoch in range(epochs):
@@ -48,10 +48,10 @@ for epoch in range(epochs):
         target_val = y[i]
 
         z = (x1 * w1) + (x2 * w2) + bias
-        output = sigmoid(z)
-        error = target_val - output
+        prediction = sigmoid(z)
+        error = target_val - prediction
 
-        d_output = error * sigmoid_derivative(output)
+        d_output = error * sigmoid_derivative(prediction)
         w1 += learning_rate * d_output * x1
         w2 += learning_rate * d_output * x2
         bias += learning_rate * d_output
