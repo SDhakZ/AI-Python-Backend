@@ -45,11 +45,11 @@ def sigmoid_derivative(prediction):
 for epoch in range(epochs):
     for i in range(len(X)):
         x1, x2 = X[i]
-        target_val = y[i]
+        target = y[i]
 
         z = (x1 * w1) + (x2 * w2) + bias
         prediction = sigmoid(z)
-        error = target_val - prediction
+        error = target - prediction
 
         d_prediction = error * sigmoid_derivative(prediction)
         w1 += learning_rate * d_prediction * x1
@@ -69,3 +69,4 @@ with open("bmi_model.pkl", "wb") as f:
     pickle.dump(model, f)
 
 print("Model trained and saved as bmi_model.pkl")
+warnings.filterwarnings("ignore", category=UserWarning)

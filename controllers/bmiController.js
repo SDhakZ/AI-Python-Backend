@@ -22,7 +22,7 @@ exports.calculateBMI = async (req, res) => {
   }
 };
 
-// 🧠 Helper function to classify BMI
+// Helper function to classify BMI
 function getBMICategory(bmi) {
   if (bmi < 18.5) return "Underweight";
   if (bmi < 25) return "Normal";
