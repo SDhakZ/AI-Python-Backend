@@ -51,10 +51,10 @@ for epoch in range(epochs):
         prediction = sigmoid(z)
         error = target_val - prediction
 
-        d_output = error * sigmoid_derivative(prediction)
-        w1 += learning_rate * d_output * x1
-        w2 += learning_rate * d_output * x2
-        bias += learning_rate * d_output
+        d_prediction = error * sigmoid_derivative(prediction)
+        w1 += learning_rate * d_prediction * x1
+        w2 += learning_rate * d_prediction * x2
+        bias += learning_rate * d_prediction
 
 # Save model and scalers
 model = {
