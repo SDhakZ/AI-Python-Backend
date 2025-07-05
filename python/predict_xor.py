@@ -37,4 +37,4 @@ a2 = sigmoid(z2)
 
 # Output result
 prediction = step(a2[0][0])
-print(f"Input: [{x1}, {x2}] → Prediction: {prediction} (Raw: {a2[0][0]:.4f})")
+print(prediction)
