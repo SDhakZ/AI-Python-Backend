@@ -52,7 +52,7 @@ for epoch in range(epochs):
     b_hidden += np.sum(d_hidden, axis=0, keepdims=True) * lr
     if epoch % 100 == 0:
         loss = np.mean(np.square(error))
-        print(f"Epoch {epoch} - Loss: {loss}")
+        print(f"Epochs: {epoch} - Loss: {loss}")
     
 import pickle
 
