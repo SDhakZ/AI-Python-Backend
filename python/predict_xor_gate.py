@@ -4,7 +4,7 @@ import pickle
 
 # Usage check
 if len(sys.argv) != 3:
-    print("Usage: python predict_gate.py <x1> <x2>")
+    print("Usage: python predict_gate.py <x1>  <x2>")
     sys.exit(1)
 
 # Parse inputs
