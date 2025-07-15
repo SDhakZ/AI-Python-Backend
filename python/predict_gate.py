@@ -38,6 +38,7 @@ w1 = model["w1"]
 w2 = model["w2"]
 bias = model["bias"]
 
+print(w1,w2)
 z = (x1 * w1) + (x2 * w2) + bias
 output = step(z)
 
