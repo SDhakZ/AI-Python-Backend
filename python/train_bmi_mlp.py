@@ -7,14 +7,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 # --- Activation Functions ---
-def relu(x):
-    return np.maximum(0, x)
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
-def relu_derivative(x):
-    return (x > 0).astype(float)
+def sigmoid_derivative(x):
+    s = sigmoid(x)
+    return s * (1 - s)
 
 # --- Load and preprocess dataset ---
 df = pd.read_csv("bmi.csv")
+
 df["Gender"] = df["Gender"].map({"Male": 0, "Female": 1})
 df["height_m"] = df["Height"] / 100
 df["bmi"] = df["Weight"] / (df["height_m"] ** 2)
@@ -34,22 +36,25 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_scaled, test_siz
 
 # --- Network configuration ---
 input_size = 3
-hidden_size = 5
+hidden_size = 4
 output_size = 1
 lr = 0.01
 epochs = 1000
 
-# --- Initialize weights and biases with He initialization ---
-w1 = np.random.randn(input_size, hidden_size) * np.sqrt(2. / input_size)
+# --- Initialize weights and biases (Xavier for sigmoid) ---
+limit1 = np.sqrt(6 / (input_size + hidden_size))
+limit2 = np.sqrt(6 / (hidden_size + output_size))
+
+w1 = np.random.uniform(-limit1, limit1, (input_size, hidden_size))
 b1 = np.zeros((1, hidden_size))
-w2 = np.random.randn(hidden_size, output_size) * np.sqrt(2. / hidden_size)
+w2 = np.random.uniform(-limit2, limit2, (hidden_size, output_size))
 b2 = np.zeros((1, output_size))
 
 # --- Training loop ---
 for epoch in range(epochs):
     # Forward pass
     z1 = np.dot(X_train, w1) + b1
-    a1 = relu(z1)
+    a1 = sigmoid(z1)
     z2 = np.dot(a1, w2) + b2
     a2 = z2  # Linear output for regression
 
@@ -64,7 +69,7 @@ for epoch in range(epochs):
     d_b2 = np.sum(d_z2, axis=0, keepdims=True)
 
     d_a1 = np.dot(d_z2, w2.T)
-    d_z1 = d_a1 * relu_derivative(z1)
+    d_z1 = d_a1 * sigmoid_derivative(z1)
     d_w1 = np.dot(X_train.T, d_z1)
     d_b1 = np.sum(d_z1, axis=0, keepdims=True)
 
@@ -77,6 +82,11 @@ for epoch in range(epochs):
     b1 -= lr * d_b1
     w2 -= lr * d_w2
     b2 -= lr * d_b2
+
+    # Optional: print loss
+    if epoch % 100 == 0:
+        loss = np.mean(error**2)
+        print(f"Epoch {epoch}, Loss: {loss:.6f}")
 
 # --- Save model ---
 model = {
@@ -91,4 +101,4 @@ model = {
 with open("bmi_model_mlp.pkl", "wb") as f:
     pickle.dump(model, f)
 
-print("✅ BMI regression model trained and saved as bmi_model_mlp.pkl")
+print("✅ BMI regression model trained with sigmoid and saved as bmi_model_mlp.pkl")

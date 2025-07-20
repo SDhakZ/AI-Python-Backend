@@ -6,8 +6,9 @@ import numpy as np
 import os
 import subprocess
 
-def relu(x):
-    return np.maximum(0, x)
+# --- Activation ---
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 # === Ensure model is trained ===
 if not os.path.exists("bmi_model_mlp.pkl"):
@@ -43,11 +44,11 @@ gender = 0 if gender_str == "male" else 1
 # === Prepare input ===
 input_scaled = input_scaler.transform([[gender, height, weight]])
 
-# === Forward pass (no sigmoid) ===
+# === Forward pass using sigmoid ===
 z1 = np.dot(input_scaled, w1) + b1
-a1 = relu(z1)
+a1 = sigmoid(z1)
 z2 = np.dot(a1, w2) + b2
-output = z2  # Raw regression output
+output = z2  # Linear output (no sigmoid on final layer)
 
 # === Rescale prediction ===
 predicted_bmi = target_scaler.inverse_transform(output)[0][0]
