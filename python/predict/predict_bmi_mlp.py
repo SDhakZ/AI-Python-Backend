@@ -9,11 +9,11 @@ import subprocess
 # --- Activation ---
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
-
+train_script_path = "python/train/train_bmi_mlp.py"
 # === Ensure model is trained ===
 if not os.path.exists("bmi_model_mlp.pkl"):
     print("Training model...", flush=True)
-    subprocess.run(["python", "train_bmi_model.py"], check=True)
+    subprocess.run(["python", train_script_path], check=True)
 
 # === Load trained model ===
 with open("bmi_model_mlp.pkl", "rb") as f:
@@ -52,4 +52,4 @@ output = z2  # Linear output (no sigmoid on final layer)
 
 # === Rescale prediction ===
 predicted_bmi = target_scaler.inverse_transform(output)[0][0]
-print(f"✅ Predicted BMI: {predicted_bmi:.2f}")
+print(f"{predicted_bmi:.2f}")
