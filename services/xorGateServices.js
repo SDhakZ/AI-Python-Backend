@@ -3,7 +3,10 @@ const path = require("path");
 
 exports.getXorGateFromPython = (a, b) => {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, "../python/predict_xor_gate.py");
+    const scriptPath = path.join(
+      __dirname,
+      "../python/predict/predict_xor_gate.py"
+    );
 
     const process = spawn("python", [scriptPath, a, b]);
     let result = "";

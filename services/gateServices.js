@@ -3,7 +3,10 @@ const path = require("path");
 
 exports.getGateFromPython = (a, b, gate) => {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, "../python/predict_gate.py");
+    const scriptPath = path.join(
+      __dirname,
+      "../python/predict/predict_gate.py"
+    );
 
     const process = spawn("python", [scriptPath, a, b, gate]);
     console.log("Running Python script:", scriptPath, a, b, gate);

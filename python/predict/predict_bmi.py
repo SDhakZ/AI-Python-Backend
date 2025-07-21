@@ -7,11 +7,11 @@ import subprocess
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
-train_script_path = "python/train_bmi_model.py"
+train_script_path = "python/train/train_bmi_model.py"
 if not os.path.exists("bmi_model.pkl"):
     print(f"bmi model not found. Training model...", flush=True)
     try:
-        subprocess.run(["python", "python/train_bmi_model.py"], check=True)
+        subprocess.run(["python", "python/train/train_bmi_model.py"], check=True)
     except subprocess.CalledProcessError as e:
         print("Error training model:", e)
         sys.exit(1)

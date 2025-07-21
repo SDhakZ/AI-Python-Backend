@@ -8,13 +8,13 @@ exports.runTraining = (modelType) => {
 
     switch (modelType) {
       case "and":
-        scriptPath = "../python/train_and.py";
+        scriptPath = "../python/train/train_and.py";
         break;
       case "or":
-        scriptPath = "../python/train_or.py";
+        scriptPath = "../python/train/train_or.py";
         break;
       case "bmi":
-        scriptPath = "../python/train_bmi_model.py";
+        scriptPath = "../python/train/train_bmi_model.py";
         break;
       default:
         return reject(new Error("Unknown model type"));

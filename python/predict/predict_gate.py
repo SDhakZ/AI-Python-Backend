@@ -19,7 +19,7 @@ def step(x):
     return 1 if x >= 0 else 0
 
 model_path = f"{gate}_model.pkl"
-train_script_path = "python/train_gate.py"
+train_script_path = "python/train/train_gate.py"
 
 # Train if model not found
 if not os.path.exists(model_path):
