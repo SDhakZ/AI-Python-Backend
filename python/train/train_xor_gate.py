@@ -32,7 +32,7 @@ def sigmoid_derivative(prediction):
   return prediction * (1-prediction)
 
 #forward pass
-epochs = 100000
+epochs = 1000
 lr = 0.1
 for epoch in range(epochs):
     z1=X.dot(w_hidden)+b_hidden
@@ -53,6 +53,35 @@ for epoch in range(epochs):
     if epoch % 100 == 0:
         loss = np.mean(np.square(error))
         print(f"Epochs: {epoch} - Loss: {loss}")
+        print(f"\n Epoch: {epoch} - Loss: {loss:.6f}")
+        print("────────────────────────────────────────────")
+
+        i = 0  # You are printing for the first input (0, 0 → 0)
+        print(f" Input Pattern: {X[i].tolist()} → Target: {Y[i][0]}")
+
+        print("\n🔹 Forward Pass")
+        print(f"z1 (input to hidden layer): {z1[i]}")
+        print(f"a1 (hidden activations):    {a1[i]}")
+        print(f"z2 (input to output):       {z2[i][0]:.6f}")
+        print(f"a2 (prediction):            {a2[i][0]:.6f}")
+
+        print("\n Error & Gradients")
+        print(f"Error:                      {error[i][0]:.6f}")
+        print(f"d_output (δ_output):        {d_output[i]}")
+        print(f"d_hidden (δ_hidden):        {d_hidden[i]}")
+
+        print("\n Gradients (Before Weight Update)")
+        print("Gradient w_output:")
+        print(a1[i][:, np.newaxis] @ d_output[i][:, np.newaxis].T)
+
+        print(f"Gradient b_output:          {d_output[i]}")
+        
+        print("Gradient w_hidden:")
+        print(X[i][:, np.newaxis] @ d_hidden[i][:, np.newaxis].T)
+
+        print(f"Gradient b_hidden:          {d_hidden[i]}")
+        print("────────────────────────────────────────────")
+   
     
 import pickle
 
