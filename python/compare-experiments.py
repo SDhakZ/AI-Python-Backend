@@ -117,3 +117,45 @@ cls_plot_path = plot_grouped_bars_with_values(cls_df, "Classified Set: Metric Co
 
 (val_plot_path, cls_plot_path)
 print(val_plot_path, cls_plot_path)
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Original XGBoost values
+xgb_values = [0.475, 0.444, 0.475, 0.437]
+
+# Updated Ensemble values
+ensemble_values = [0.542, 0.538, 0.534, 0.534]
+
+# Metric names
+metrics = ["Accuracy", "Precision (W)", "Recall (W)", "F1-score (W)"]
+
+# Bar chart parameters
+x = np.arange(len(metrics))
+width = 0.35
+
+fig, ax = plt.subplots(figsize=(8, 5))
+bars1 = ax.bar(x - width/2, xgb_values, width, label="XGBoost Base", color="#1f77b4")
+bars2 = ax.bar(x + width/2, ensemble_values, width, label="Ensemble + POP+KEY", color="#ff7f0e")
+
+# Adding values above bars
+for bars in [bars1, bars2]:
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f"{height:.3f}",
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+# Labels and formatting
+ax.set_ylabel("Score")
+ax.set_title("Validation Set: Metric Comparison")
+ax.set_xticks(x)
+ax.set_xticklabels(metrics)
+ax.set_ylim(0, 0.65)
+ax.legend()
+
+plt.tight_layout()
+plt.show()

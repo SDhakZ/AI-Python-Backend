@@ -1,4 +1,4 @@
-# train_ensemble_popkey.py
+# train_ensemble_popkey_meta_xgb.py
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,11 +8,9 @@ from typing import List
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
 
 from sklearn.ensemble import RandomForestClassifier, StackingClassifier
-from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 
 RANDOM_SEED = 42
@@ -21,7 +19,7 @@ np.random.seed(RANDOM_SEED)
 def save_cm(y_true, y_pred, classes: List, title: str, out_path: str):
     cm = confusion_matrix(y_true, y_pred, labels=classes)
     df_cm = pd.DataFrame(cm, index=classes, columns=classes)
-    plt.figure(figsize=(max(8, 0.5 * len(classes)), max(6, 0.5 * len(classes))))
+    plt.figure(figsize=(max(8, 0.5 * len(classes)), max(6, 0.5 * len(classes)) ))
     sns.heatmap(df_cm, annot=True, fmt="d", cmap="Blues")
     plt.xlabel("Predicted"); plt.ylabel("True")
     plt.title(title); plt.tight_layout(); plt.savefig(out_path, dpi=150); plt.close()
@@ -29,7 +27,8 @@ def save_cm(y_true, y_pred, classes: List, title: str, out_path: str):
 def print_and_save_report(y_true, y_pred, path: str):
     rep = classification_report(y_true, y_pred, digits=5, zero_division=0)
     print(f"\n--- {path} ---\n{rep}")
-    with open(path, "w", encoding="utf-8") as f: f.write(rep)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(rep)
 
 # --- Load preprocessed POP+KEY data ---
 train_df = pd.read_csv("train_preprocessed_popkey.csv")
@@ -51,27 +50,44 @@ Xtr_imp  = imp.transform(X_train_raw)
 Xval_imp = imp.transform(X_val_raw)
 
 scl = StandardScaler().fit(Xtr_imp)
-Xtr_scl  = scl.transform(Xtr_imp)
-Xval_scl = scl.transform(Xval_imp)
-X_train = Xtr_scl
-X_val   = Xval_scl
+X_train = scl.transform(Xtr_imp)
+X_val   = scl.transform(Xval_imp)
 
-# Base learners
-rf = RandomForestClassifier(n_estimators=800, random_state=RANDOM_SEED)
-xgb = XGBClassifier(
+# --- Base learners ---
+rf = RandomForestClassifier(
+    n_estimators=800,
+    random_state=RANDOM_SEED
+)
+
+xgb_base = XGBClassifier(
     tree_method="hist",
-    n_estimators=600,
-    max_depth=6,
-    learning_rate=0.01,
+    n_estimators=900,
+    max_depth=5,
+    learning_rate=0.05,
+    subsample=0.9,
+    colsample_bytree=0.9,
+    reg_lambda=1.0,
     eval_metric="mlogloss",
     random_state=RANDOM_SEED,
 )
-meta = LogisticRegression(max_iter=1000, random_state=RANDOM_SEED)
+
+# --- Meta learner: XGBoost (regularized & shallow to reduce overfit) ---
+xgb_meta = XGBClassifier(
+    tree_method="hist",
+    n_estimators=400,
+    max_depth=3,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    reg_lambda=1.0,
+    eval_metric="mlogloss",
+    random_state=RANDOM_SEED,
+)
 
 # Stacking (passthrough so meta sees OOF preds + original features)
 stack = StackingClassifier(
-    estimators=[("rf", rf), ("xgb", xgb)],
-    final_estimator=meta,
+    estimators=[("rf", rf), ("xgb", xgb_base)],
+    final_estimator=xgb_meta,
     passthrough=True,
     cv=5,
     n_jobs=-1
@@ -86,15 +102,15 @@ acc  = accuracy_score(y_val, y_val_pred)
 wf1  = f1_score(y_val, y_val_pred, average="weighted", zero_division=0)
 mf1  = f1_score(y_val, y_val_pred, average="macro",    zero_division=0)
 print(f"\nValidation -> Acc: {acc:.5f} | F1_w: {wf1:.5f} | F1_m: {mf1:.5f}")
-print_and_save_report(y_val, y_val_pred, "val_report_ensemble_popkey.txt")
-save_cm(y_val, y_val_pred, CLASSES, "Confusion Matrix - Validation (Ensemble POP+KEY)", "cm_val_ensemble_popkey.png")
+print_and_save_report(y_val, y_val_pred, "val_report_ensemble_popkey_metaXGB.txt")
+save_cm(y_val, y_val_pred, CLASSES,
+        "Confusion Matrix - Validation (Ensemble POP+KEY, meta=XGB)",
+        "cm_val_ensemble_popkey_metaXGB.png")
 
 # Classified set (same transformers)
-Xc_imp = imp.transform(cls_df[features])
-Xc_scl = scl.transform(Xc_imp)
-Xc_sel = Xc_scl
+Xc = scl.transform(imp.transform(cls_df[features]))
 yc_true = cls_df["Class"]
-yc_pred = stack.predict(Xc_sel)
+yc_pred = stack.predict(Xc)
 acc_c  = accuracy_score(yc_true, yc_pred)
 wf1_c  = f1_score(yc_true, yc_pred, average="weighted", zero_division=0)
 mf1_c  = f1_score(yc_true, yc_pred, average="macro",    zero_division=0)
