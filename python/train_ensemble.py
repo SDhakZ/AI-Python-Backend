@@ -132,3 +132,70 @@ for fn in [
     "summary_ensemble_popkey.csv"
 ]:
     print(" -", fn)
+
+# ===================== Feature Importance Plots =====================
+# 1) Base XGB feature importances (on original features)
+try:
+    base_xgb = stack.named_estimators_["xgb"]
+    importances_base = base_xgb.feature_importances_
+    idx_base = np.argsort(importances_base)
+
+    plt.figure(figsize=(10, 6))
+    plt.barh(np.array(features)[idx_base], importances_base[idx_base])
+    plt.xlabel("Feature Importance")
+    plt.title("Feature Importance — Base XGB in Ensemble (original features)")
+    plt.tight_layout()
+    plt.savefig("feature_importance_base_xgb.png", dpi=150)
+    plt.close()
+    print("Saved: feature_importance_base_xgb.png")
+except Exception as e:
+    print("Base XGB importance plot skipped:", e)
+
+# 2) Meta XGB feature importances (on OOF preds + original features)
+try:
+    meta = stack.final_estimator_
+    importances_meta = meta.feature_importances_
+
+    # Figure out how many meta-features there are
+    n_meta_in = getattr(meta, "n_features_in_", None)
+    if n_meta_in is None:
+        n_meta_in = importances_meta.shape[0]
+
+    # Passthrough adds original features at the end
+    passthrough = getattr(stack, "passthrough", False)
+    n_orig_feats = len(features) if passthrough else 0
+
+    # Number of columns coming from base estimators' outputs
+    n_pred_cols = n_meta_in - n_orig_feats
+    n_estimators = len(stack.estimators)
+    # Columns per estimator (usually equals number of classes if using predict_proba)
+    per_estimator_cols = n_pred_cols // n_estimators if n_estimators > 0 else 0
+
+    # Build names for base predictions; prefer class-aware names if sizes match
+    # CLASSES is defined earlier in your script
+    base_pred_names = []
+    for name, _ in stack.estimators:
+        if per_estimator_cols == len(CLASSES):
+            base_pred_names += [f"{name}_proba_{cls}" for cls in CLASSES]
+        else:
+            base_pred_names += [f"{name}_feat_{i}" for i in range(per_estimator_cols)]
+
+    meta_feature_names = base_pred_names + (list(features) if passthrough else [])
+
+    # Safety: align lengths in case of off-by-ones on some setups
+    L = min(len(importances_meta), len(meta_feature_names))
+    importances_meta = importances_meta[:L]
+    meta_feature_names = meta_feature_names[:L]
+
+    idx_meta = np.argsort(importances_meta)
+    plt.figure(figsize=(12, 8))
+    plt.barh(np.array(meta_feature_names)[idx_meta], importances_meta[idx_meta])
+    plt.xlabel("Feature Importance")
+    plt.title("Feature Importance — Meta XGB (OOF preds + original features)")
+    plt.tight_layout()
+    plt.savefig("feature_importance_meta_xgb.png", dpi=150)
+    plt.close()
+    print("Saved: feature_importance_meta_xgb.png")
+except Exception as e:
+    print("Meta XGB importance plot skipped:", e)
+# ====================================================================

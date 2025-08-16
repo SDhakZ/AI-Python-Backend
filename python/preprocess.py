@@ -38,7 +38,7 @@ def drop_if_present(df: pd.DataFrame, cols):
 
 # ================= DATASET A (BASE) =================
 # Drop: Artist Name, Track Name, Popularity, energy  
-drop_cols_base = ["Artist Name", "Track Name", "Popularity"]
+drop_cols_base = ["Artist Name", "Track Name", "Popularity","energy"]
 train_base = drop_if_present(train_raw, drop_cols_base)
 cls_base   = drop_if_present(classified_raw, drop_cols_base)
 
