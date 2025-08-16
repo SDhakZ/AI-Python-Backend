@@ -118,7 +118,6 @@ print(f"Classified -> Acc: {acc_c:.5f} | F1_w: {wf1_c:.5f} | F1_m: {mf1_c:.5f}")
 print_and_save_report(yc_true, yc_pred, "classified_report_ensemble_popkey.txt")
 save_cm(yc_true, yc_pred, CLASSES, "Confusion Matrix - Classified (Ensemble POP+KEY)", "cm_classified_ensemble_popkey.png")
 
-# Simple summary CSV (for slides)
 pd.DataFrame([{
     "Setting":"Ensemble_POP+KEY",
     "Val_Accuracy":acc, "Val_F1_weighted":wf1, "Val_F1_macro":mf1,
@@ -151,7 +150,7 @@ try:
 except Exception as e:
     print("Base XGB importance plot skipped:", e)
 
-# 2) Meta XGB feature importances (on OOF preds + original features)
+# 2) Meta XGB feature importances 
 try:
     meta = stack.final_estimator_
     importances_meta = meta.feature_importances_
@@ -168,11 +167,8 @@ try:
     # Number of columns coming from base estimators' outputs
     n_pred_cols = n_meta_in - n_orig_feats
     n_estimators = len(stack.estimators)
-    # Columns per estimator (usually equals number of classes if using predict_proba)
     per_estimator_cols = n_pred_cols // n_estimators if n_estimators > 0 else 0
 
-    # Build names for base predictions; prefer class-aware names if sizes match
-    # CLASSES is defined earlier in your script
     base_pred_names = []
     for name, _ in stack.estimators:
         if per_estimator_cols == len(CLASSES):
