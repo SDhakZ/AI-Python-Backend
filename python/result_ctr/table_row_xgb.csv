@@ -1,0 +1,2 @@
+model,MAE,MEC,IAS,NF
+"gbt (maxdepth:10, nrounds:800)",0.16,0.52,0.04,7
