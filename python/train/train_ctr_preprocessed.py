@@ -29,7 +29,7 @@ X = df[behavioral].copy()
 y = df["Revenue"].astype(int)
 
 # 3) Feature selection with mRMR
-selected_feats = mrmr_classif(X=X, y=y, K=min(10, X.shape[1]))
+selected_feats = mrmr_classif(X=X, y=y, K=min(15, X.shape[1]))
 print("Selected features by mRMR:", selected_feats)
 X = X[selected_feats]
 
@@ -45,6 +45,8 @@ X_train_sm, y_train_sm = sm.fit_resample(X_train, y_train)
 # 6) Base XGBoost (no tuning)
 xgb_clf = xgb.XGBClassifier(
     objective="binary:logistic",
+    tree_method="hist",
+    device="cuda",
     eval_metric="logloss",
     random_state=42,
     use_label_encoder=False,

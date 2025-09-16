@@ -58,6 +58,7 @@ selected = features
 # Model: XGBoost only (simple, tweakable)
 xgb = XGBClassifier(
     tree_method="hist",
+    device="cuda",
     n_estimators=500,
     max_depth=6,
     learning_rate=0.01,
