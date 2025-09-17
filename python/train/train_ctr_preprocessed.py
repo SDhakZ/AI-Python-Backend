@@ -12,6 +12,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.inspection import permutation_importance
 from imblearn.over_sampling import SMOTE
+from sklearn.metrics import confusion_matrix
 import xgboost as xgb
 from mrmr import mrmr_classif   # pip install mrmr_selection
 
